@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 
+from debug import log, plog
+
 class Node():
     def __init__(self, t, parent = None, is_leaf = True,
-                 keys = None, children = None):
+                 keys = None, values = None, children = None):
         if (t < 2):
             raise Exception("t have to be greater than 1")
 
@@ -10,7 +12,8 @@ class Node():
         self.is_leaf  = is_leaf
         self.t        = t
         self.keys     = [] if keys is None else keys
-        self.children = [None] if children is None else children
+        self.values   = [] if values is None else values
+        self.children = [] if children is None else children
 
     @property
     def is_root(self):
@@ -29,20 +32,12 @@ class Node():
         return self.max_key_count + 1
 
     @property
-    def first_child(self):
-        return self.children[0]
-
-    @property
-    def last_child(self):
-        return self.children[-1]
-
-    @property
     def is_full(self):
         return self.key_count == self.max_key_count
 
     @property
     def height(self):
-        return 1 if self.is_leaf else 1 + self.first_child.height
+        return 1 if self.is_leaf else 1 + self.children[0].height
 
     @property
     def median_key_index(self):
@@ -62,33 +57,28 @@ class Node():
 
         i = self.find_proper_child_index(key)
 
+        if i < len(self.keys) and self.keys[i] == key:
+            self.values[i] = value      # update value
+            return
+
         if self.is_leaf:
             # do insert
             self.keys.insert(i, key)
+            self.values.insert(i, value)
             self.children.append(None)
         else:
             if self.children[i].is_full:
                 self.split_child(i)
-            #
-            #    [4][9]
-            #      |
-            #  [5][6][7]
-            #
-            # after insertion, keys[i] becomes 6.
-            #
-            #    [4][6][9]
-            #       / \
-            # (i) [5] [7] (i+1)
-            #
-            if key > self.keys[i]:
-                i = i + 1
-            return self.children[i].insert(key, value)
+            if i < len(self.keys) and key == self.keys[i]:
+                self.values[i] == value # update value
+            else:
+                self.children[i].insert(key, value)
 
     def search(self, key):
         i = self.find_proper_child_index(key)
 
         if i < len(self.keys) and key == self.keys[i]:
-            return (key, i)
+            return (key, self.values[i])
         elif self.is_leaf:
             return None
         else:
@@ -98,29 +88,30 @@ class Node():
         child = self.children[pos]
 
         if not child.is_full:
-            raise Exception("Tring to split non-full node")
+            raise Exception("Trying to split non-full node")
 
         med_idx = child.median_key_index
 
-        median_key = child.keys[med_idx]
+        left_node = Node(t        = child.t,
+                         is_leaf  = child.is_leaf,
+                         keys     = child.keys[0:med_idx],
+                         values   = child.values[0:med_idx],
+                         children = child.children[0:med_idx + 1])
+        right_node = Node(t        = child.t,
+                          is_leaf  = child.is_leaf,
+                          keys     = child.keys[med_idx + 1:],
+                          values   = child.values[med_idx + 1:],
+                          children = child.children[med_idx + 1:])
 
-        left_keys  = child.keys[0:med_idx]
-        right_keys = child.keys[med_idx + 1:]
-
-        left_children  = child.children[0:med_idx + 1]
-        right_children = child.children[med_idx + 1:]
-
-        left_node = Node(t = child.t, keys = left_keys, children = left_children)
-        right_node = Node(t = child.t, keys = right_keys, children = right_children)
-
-        self.keys.insert(pos, median_key)
-        self.children.insert(pos, right_node)
+        self.keys.insert(pos, child.keys[med_idx])
+        self.values.insert(pos, child.values[med_idx])
+        self.children[pos] = right_node
         self.children.insert(pos, left_node)
 
-        child.is_leaf = False
-
-    def detach(self):
-        """
-        Detach from parent node
-        """
-        pass
+    def set_pp_info(self, map):
+        if not self.height in map:
+            map[self.height] = []
+        map[self.height].append("[{0}]".format(",".join([str(k) for k in self.keys])))
+        if not self.is_leaf:
+            for child in self.children:
+                child.set_pp_info(map)
