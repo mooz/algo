@@ -21,34 +21,31 @@ def test_node_search_leaf():
     eq_(node.search(15), (15, 2))
     eq_(node.search(17), None)
 
-def test_find_proper_key_index():
+def test_find_proper_child_index():
     node = Node(t=2)
     node.keys = [3, 9, 15]
-    eq_(node.find_proper_key_index(-10), 0)
-    eq_(node.find_proper_key_index(3), 0)
-    eq_(node.find_proper_key_index(5), 1)
-    eq_(node.find_proper_key_index(9), 1)
-    eq_(node.find_proper_key_index(15), 2)
-    eq_(node.find_proper_key_index(16), 3)
+    eq_(node.find_proper_child_index(-10), 0)
+    eq_(node.find_proper_child_index(3), 0)
+    eq_(node.find_proper_child_index(5), 1)
+    eq_(node.find_proper_child_index(9), 1)
+    eq_(node.find_proper_child_index(15), 2)
+    eq_(node.find_proper_child_index(16), 3)
 
-def test_split():
+# def test_split():
+#     node = Node(t=3)
+#     node.keys = [3, 9, 15, 20, 32]
+#     median, left, right = node.split()
+#     eq_(left.keys, [3, 9])
+#     eq_(median, 15)
+#     eq_(right.keys, [20, 32])
+
+def test_insert():
     node = Node(t=3)
-    node.keys = [3, 9, 15, 20, 32]
-    left, median, right = node.split()
-    eq_(left, [3, 9])
-    eq_(median, 15)
-    eq_(right, [20, 32])
-
-def test_add_pair():
-    node = Node(t=3)
-
-    node.add_pair(20, None)
-    node.add_pair(3, None)
-    node.add_pair(9, None)
-    node.add_pair(32, None)
-    node.add_pair(15, None)
-    node.add_pair(19, None)
-
+    node.insert(20, None)
+    node.insert(3, None)
+    node.insert(9, None)
+    node.insert(32, None)
+    node.insert(15, None)
     eq_(node.keys,  [3, 9, 15, 20, 32])
 
 if __name__ == "__main__":
