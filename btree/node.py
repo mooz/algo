@@ -117,6 +117,8 @@ class Node():
         self.children.insert(pos, right)
         self.children.insert(pos, left_node)
 
+        child.is_leaf = False
+
     def detach(self):
         """
         Detach from parent node
