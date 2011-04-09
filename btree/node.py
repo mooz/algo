@@ -114,7 +114,7 @@ class Node():
         right_node = Node(t = child.t, keys = right_keys, children = right_children)
 
         self.keys.insert(pos, median_key)
-        self.children.insert(pos, right)
+        self.children.insert(pos, right_node)
         self.children.insert(pos, left_node)
 
         child.is_leaf = False
