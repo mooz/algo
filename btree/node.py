@@ -82,28 +82,28 @@ class Node():
         assert(not self.is_full)
 
         pos = self.find_key_index(key)
-
         if pos:
             self.values[pos] = value      # update value
             return
 
         pos = self.find_proper_child_index(key)
-
         if self.is_leaf:
-            # do insert
-            self.insert_at(pos, key, value)
+            self.insert_at(pos, key, value) # do insert
+            return
+
+        if self.children[pos].is_full:
+            self.split_child(pos)
+
+        key_pos = min(pos, len(self.keys) - 1)
+        hoisted = self.keys[key_pos]
+
+        if key == hoisted:
+            self.values[key_pos] == value # update value
         else:
-            if self.children[pos].is_full:
-                self.split_child(pos)
-            key_pos = min(pos, len(self.keys) - 1)
-            hoisted = self.keys[key_pos]
-            if key == hoisted:
-                self.values[key_pos] == value # update value
-            else:
-                if key > hoisted and pos < len(self.keys):
-                    # adjust pos (because self.keys was modified)
-                    pos += 1
-                self.children[pos].insert(key, value)
+            if key > hoisted and pos < len(self.keys):
+                # adjust pos (because self.keys was modified)
+                pos += 1
+            self.children[pos].insert(key, value)
 
     def search(self, key):
         pos = self.find_proper_child_index(key)
@@ -117,9 +117,7 @@ class Node():
 
     def split_child(self, pos):
         child = self.children[pos]
-
-        if not child.is_full:
-            raise Exception("Trying to split non-full node")
+        assert(child.is_full)
 
         med_idx = child.median_key_index
 
@@ -142,7 +140,6 @@ class Node():
     def delete(self, key):
         if (self.is_leaf):
             return self.delete_internal_leaf(key)
-
         try:
             pos = self.keys.index(key)
         except ValueError:
@@ -207,10 +204,10 @@ class Node():
         if not child.is_deletion_delegable:
             child = self.ensure_descending_node_is_delegable(pos)
         return child.delete(key)
+
     def get_child_at(self, pos, cyclic = False):
         if not cyclic and pos < 0:
             return None
-
         try:
             return self.children[pos]
         except IndexError:
@@ -238,11 +235,9 @@ class Node():
             left  = child
             right = right_sibling
 
-
         merged = self.merge_nodes(left, right, self.keys[pos], self.values[pos])
 
         self.delete_at(pos)
-
 
         return merged
 
