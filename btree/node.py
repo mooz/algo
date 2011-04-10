@@ -56,6 +56,12 @@ class Node():
     def median_key_index(self):
         return self.t - 1
 
+    def find_key_index(self, key):
+        try:
+            return self.keys.index(key)
+        except ValueError:
+            return None
+
     def find_proper_child_index(self, key):
         for pos, known_key in enumerate(self.keys):
             if key <= known_key:
@@ -72,11 +78,13 @@ class Node():
     def insert(self, key, value = None):
         assert(not self.is_full)
 
-        pos = self.find_proper_child_index(key)
+        pos = self.find_key_index(key)
 
-        if pos < len(self.keys) and self.keys[pos] == key:
+        if pos:
             self.values[pos] = value      # update value
             return
+
+        pos = self.find_proper_child_index(key)
 
         if self.is_leaf:
             # do insert
