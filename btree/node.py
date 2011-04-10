@@ -70,8 +70,7 @@ class Node():
         self.children.insert(pos + 1, child)
 
     def insert(self, key, value = None):
-        if (self.is_full):
-            raise Exception("Do not call insert for full-node")
+        assert(not self.is_full)
 
         pos = self.find_proper_child_index(key)
 
