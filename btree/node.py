@@ -174,7 +174,9 @@ class Node():
         left_child.values.append(self.values[pos])
         left_child.values.extend(right_child.values)
         left_child.children.extend(right_child.children)
+        # delete target from self
         self.delete_at(pos)
+        # delete target from child
         return left_child.delete(key)
 
     def delete_at(self, pos, left = False):
