@@ -64,6 +64,11 @@ class Node():
             pos = len(self.keys)          # len(self.children) - 1
         return pos
 
+    def insert_at(self, pos, key, value):
+        self.keys.insert(pos, key)
+        self.values.insert(pos, value)
+        self.children.append(None)
+
     def insert(self, key, value = None):
         if (self.is_full):
             raise Exception("Do not call insert for full-node")
@@ -76,9 +81,7 @@ class Node():
 
         if self.is_leaf:
             # do insert
-            self.keys.insert(pos, key)
-            self.values.insert(pos, value)
-            self.children.append(None)
+            self.insert_at(pos, key, value)
         else:
             if self.children[pos].is_full:
                 self.split_child(pos)
