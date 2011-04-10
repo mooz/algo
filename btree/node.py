@@ -13,7 +13,7 @@ class Node():
         self.t        = t
         self.keys     = [] if keys is None else keys
         self.values   = [] if values is None else values
-        self.children = [] if children is None else children
+        self.children = [None] if children is None else children
 
     @property
     def is_root(self):
