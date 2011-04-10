@@ -64,10 +64,10 @@ class Node():
             pos = len(self.keys)          # len(self.children) - 1
         return pos
 
-    def insert_at(self, pos, key, value):
+    def insert_at(self, pos, key, value, child = None):
         self.keys.insert(pos, key)
         self.values.insert(pos, value)
-        self.children.append(None)
+        self.children.insert(pos + 1, child)
 
     def insert(self, key, value = None):
         if (self.is_full):
@@ -132,7 +132,7 @@ class Node():
             pos = self.keys.index(key)
         except ValueError:
             # pattern 3-{a, b}
-            raise Exception("Not implemented yet")
+            return self.delete_internal_descending(key)
         else:
             # pattern 2-{a, b, c}
             return self.delete_internal_restructuring(key, pos)
@@ -170,25 +170,92 @@ class Node():
         self.values[replace_pos] = del_value
         return deleted
 
+    def merge_nodes(self, left, right, key, value):
+        left.keys.append(key)
+        left.keys.extend(right.keys)
+        left.values.append(value)
+        left.values.extend(right.values)
+        left.children.extend(right.children)
+        return left
+
     def merge_and_delete_from_child(self, left_child, right_child, key, pos):
         # merge target (key, value) and right_child into left_child
-        left_child.keys.append(key)
-        left_child.keys.extend(right_child.keys)
-        left_child.values.append(self.values[pos])
-        left_child.values.extend(right_child.values)
-        left_child.children.extend(right_child.children)
+        self.merge_nodes(left_child, right_child, key, self.values[pos])
         # delete target from self
         self.delete_at(pos)
         # delete target from child
         return left_child.delete(key)
 
-    def delete_at(self, pos, left = False):
+    def delete_internal_descending(self, key):
+        pos = self.find_proper_child_index(key)
+        child = self.children[pos]
+        if not child.is_deletion_delegable:
+            child = self.ensure_descending_node_is_delegable(pos)
+        return child.delete(key)
+
+    def get_child_at(self, pos):
+        try:
+            return self.children[pos]
+        except IndexError:
+            return None
+
+    def ensure_descending_node_is_delegable(self, pos):
+        child = self.children[pos]
+
+        left_sibling = self.get_child_at(pos - 1)
+        if left_sibling and left_sibling.is_deletion_delegable:
+            self.rotate_tree(pos, child, left_sibling, clockwise = True)
+            return child
+
+        right_sibling = self.get_child_at(pos + 1)
+        if right_sibling and right_sibling.is_deletion_delegable:
+            self.rotate_tree(pos, child, right_sibling, clockwise = False)
+            return child
+
+        # merge children
+        if left_sibling:
+            left  = left_sibling
+            right = child
+        else:
+            left  = child
+            right = right_sibling
+
+        my_pos = min(pos, len(self.keys) - 1)
+        merged = self.merge_nodes(left, right, self.keys[my_pos], self.values[my_pos])
+
+        self.delete_at(my_pos)
+
+        return merged
+
+    def rotate_tree(self, pos, target, sibling, clockwise = True):
+        # save self key-value
+        my_key = self.keys[pos]
+        my_value = self.values[pos]
+
+        # carry parts from sibling
+        sib_del_pos = -1 if clockwise else 0
+        sib_key = sibling.keys[sib_del_pos]
+        sib_value = sibling.values[sib_del_pos]
+        sib_child = sibling.children[sib_del_pos]
+        sibling.delete_at(sib_del_pos, delete_right = clockwise)
+
+        # set carried key-value to self
+        self.keys[pos] = sib_key
+        self.values[pos] = sib_value
+
+        # give self key-value and sibling child to target
+        tar_ins_pos = 0 if clockwise else len(target.keys)
+        target.insert_at(tar_ins_pos, my_key, my_value, sib_child)
+
+    def delete_at(self, pos, delete_right = True):
+        if pos < 0:
+            pos = len(self.keys) + pos
         self.keys.pop(pos)
         self.values.pop(pos)
-        if left:
-            child_pos = pos             # delete left child for key[pos]
-        else:
+        if delete_right:
             child_pos = pos + 1         # delete right child for key[pos]
+        else:
+            child_pos = pos             # delete left child for key[pos]
         return self.children.pop(child_pos)
 
     def set_pp_info(self, map):
