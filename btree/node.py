@@ -204,8 +204,10 @@ class Node():
         if not child.is_deletion_delegable:
             child = self.ensure_descending_node_is_delegable(pos)
         return child.delete(key)
+    def get_child_at(self, pos, cyclic = False):
+        if not cyclic and pos < 0:
+            return None
 
-    def get_child_at(self, pos):
         try:
             return self.children[pos]
         except IndexError:
@@ -228,14 +230,16 @@ class Node():
         if left_sibling:
             left  = left_sibling
             right = child
+            pos   = pos - 1
         else:
             left  = child
             right = right_sibling
 
-        my_pos = min(pos, len(self.keys) - 1)
-        merged = self.merge_nodes(left, right, self.keys[my_pos], self.values[my_pos])
 
-        self.delete_at(my_pos)
+        merged = self.merge_nodes(left, right, self.keys[pos], self.values[pos])
+
+        self.delete_at(pos)
+
 
         return merged
 
