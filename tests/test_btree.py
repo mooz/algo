@@ -59,6 +59,15 @@ def test_btree_delete():
     tree.insert(7)
     tree.insert(10)
     eq_(tree.delete(10), True)
+    tree.insert(13)
+    tree.insert(17)
+    tree.insert(19)
+    tree.insert(14)
+    tree.insert(12)
+    tree.insert(9)
+    eq_(tree.delete(13), True)
+    eq_(tree.delete(7), True)
+    eq_(tree.delete(17), True)
 
 if __name__ == "__main__":
     import nose

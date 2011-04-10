@@ -146,21 +146,37 @@ class Node():
             return True                 # found and deleted
 
     def delete_internal_restructuring(self, key, pos):
-        # pattern 2-{a, b, c}
         left_child  = self.children[pos]
         right_child = self.children[pos + 1]
 
         if (left_child.is_deletion_delegable):
-            # pattern 2-a
-            pass
+            return self.delete_from_child(left_child, -1, pos) # pattern 2-a
         elif (right_child.is_deletion_delegable):
-            # pattern 2-b
-            pass
+            return self.delete_from_child(right_child, 0, pos) # pattern 2-b
         else:
-            # pattern 2-c
-            pass
+            return self.merge_and_delete_from_child(left_child, right_child, key, pos)
 
-        raise Exception("delete_internal_restructuring() is not impelemented yet")
+    def delete_from_child(self, child, del_pos, replace_pos):
+        # save
+        del_key = child.keys[del_pos]
+        del_value = child.values[del_pos]
+        # delete recursively
+        deleted = child.delete(del_key)
+        # replace
+        self.keys[replace_pos] = del_key
+        self.values[replace_pos] = del_value
+        return deleted
+
+    def merge_and_delete_from_child(self, left_child, right_child, key, pos):
+        # merge target (key, value) and right_child into left_child
+        left_child.keys.append(key)
+        left_child.keys.extend(right_child.keys)
+        left_child.values.append(self.values[pos])
+        left_child.values.extend(right_child.values)
+        left_child.children.extend(right_child.children)
+        self.delete_at(pos)
+        res = left_child.delete(key)
+        return res
 
     def delete_at(self, pos, left = False):
         self.keys.pop(pos)
