@@ -44,6 +44,11 @@ class Node():
         return self.key_count == self.max_key_count
 
     @property
+    def is_deletion_delegable(self):
+        # XXX: Is this correct for root node?
+        return self.key_count >= self.t
+
+    @property
     def height(self):
         return 1 if self.is_leaf else 1 + self.children[0].height
 
@@ -119,8 +124,15 @@ class Node():
     def delete(self, key):
         if (self.is_leaf):
             return self.delete_internal_leaf(key)
-        else:
+
+        try:
+            pos = self.keys.index(key)
+        except ValueError:
+            # pattern 3-{a, b}
             raise Exception("Not implemented yet")
+        else:
+            # pattern 2-{a, b, c}
+            return self.delete_internal_restructuring(key, pos)
 
     def delete_internal_leaf(self, key):
         assert(self.is_leaf)
@@ -132,6 +144,23 @@ class Node():
         else:
             self.delete_at(pos)
             return True                 # found and deleted
+
+    def delete_internal_restructuring(self, key, pos):
+        # pattern 2-{a, b, c}
+        left_child  = self.children[pos]
+        right_child = self.children[pos + 1]
+
+        if (left_child.is_deletion_delegable):
+            # pattern 2-a
+            pass
+        elif (right_child.is_deletion_delegable):
+            # pattern 2-b
+            pass
+        else:
+            # pattern 2-c
+            pass
+
+        raise Exception("delete_internal_restructuring() is not impelemented yet")
 
     def delete_at(self, pos, left = False):
         self.keys.pop(pos)

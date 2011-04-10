@@ -48,6 +48,15 @@ def test_insert():
     node.insert(15, None)
     eq_(node.keys,  [3, 9, 15, 20, 32])
 
+def test_deletion_delegable():
+    node = Node(t = 3)
+    node.insert(20, None)
+    eq_(node.is_deletion_delegable, False)
+    node.insert(3, None)
+    eq_(node.is_deletion_delegable, False)
+    node.insert(9, None)
+    eq_(node.is_deletion_delegable, True)
+
 if __name__ == "__main__":
     import nose
     nose.main(argv=["nose", "-vv", __file__])
