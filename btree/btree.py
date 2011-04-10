@@ -26,6 +26,13 @@ class Btree(object):
     def search(self, key):
         return self.root.search(key)
 
+    def delete(self, key):
+        log("--------------------")
+        log("delete {0}".format(key))
+        deleted = self.root.delete(key)
+        log(self)
+        return deleted
+
     def __str__(self):
         info = {}
         self.root.set_pp_info(info)

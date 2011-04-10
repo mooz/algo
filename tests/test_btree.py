@@ -49,6 +49,17 @@ def test_btree_insert():
     tree.insert(15)
     eq_(tree.height, 3)
 
+def test_btree_delete():
+    """
+    キー指定による値の削除
+    """
+    log("=====================================")
+    tree = Btree()
+    tree.insert(4)
+    tree.insert(7)
+    tree.insert(10)
+    eq_(tree.delete(10), True)
+
 if __name__ == "__main__":
     import nose
     nose.main(argv=["nose", "-vv", __file__])

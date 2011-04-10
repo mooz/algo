@@ -108,6 +108,31 @@ class Node():
         self.children[pos] = right_node
         self.children.insert(pos, left_node)
 
+    def delete(self, key):
+        if (self.is_leaf):
+            return self.delete_internal_leaf(key)
+        else:
+            raise Exception("Not implemented yet")
+
+    def delete_internal_leaf(self, key):
+        assert(self.is_leaf)
+
+        try:
+            i = self.keys.index(key)
+            self.delete_at(i)
+            return True                 # found and deleted
+        except ValueError:
+            return False                # not found
+
+    def delete_at(self, pos, left = False):
+        self.keys.pop(pos)
+        self.values.pop(pos)
+        if left:
+            child_pos = pos             # delete left child for key[pos]
+        else:
+            child_pos = pos + 1         # delete right child for key[pos]
+        return self.children.pop(pos)
+
     def set_pp_info(self, map):
         if not self.height in map:
             map[self.height] = []
