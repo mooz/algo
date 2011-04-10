@@ -43,7 +43,7 @@ class Node():
     def median_key_index(self):
         return self.t - 1
 
-    def find_proper_child_index(self, key):
+    def find_child_node_pos(self, key):
         for i, known_key in enumerate(self.keys):
             if key <= known_key:
                 break
@@ -55,7 +55,7 @@ class Node():
         if (self.is_full):
             raise Exception("Do not call insert for full-node")
 
-        i = self.find_proper_child_index(key)
+        i = self.find_child_node_pos(key)
 
         if i < len(self.keys) and self.keys[i] == key:
             self.values[i] = value      # update value
@@ -75,7 +75,7 @@ class Node():
                 self.children[i].insert(key, value)
 
     def search(self, key):
-        i = self.find_proper_child_index(key)
+        i = self.find_child_node_pos(key)
 
         if i < len(self.keys) and key == self.keys[i]:
             return (key, self.values[i])
