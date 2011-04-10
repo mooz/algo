@@ -28,8 +28,16 @@ class Node():
         return 2 * self.t - 1
 
     @property
+    def min_key_count(self):
+        return 1 if self.is_root else self.t - 1
+
+    @property
     def max_child_count(self):
         return self.max_key_count + 1
+
+    @property
+    def min_child_count(self):
+        return 1 if self.is_root else self.min_key_count + 1
 
     @property
     def is_full(self):
