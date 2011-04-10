@@ -15,6 +15,9 @@ class Node():
         self.values   = [] if values is None else values
         self.children = [None] if children is None else children
 
+    def __str__(self):
+        return str(self.keys)
+
     @property
     def is_root(self):
         return self.parent is None
