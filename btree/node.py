@@ -127,10 +127,11 @@ class Node():
 
         try:
             i = self.keys.index(key)
-            self.delete_at(i)
-            return True                 # found and deleted
         except ValueError:
             return False                # not found
+        else:
+            self.delete_at(i)
+            return True                 # found and deleted
 
     def delete_at(self, pos, left = False):
         self.keys.pop(pos)
