@@ -81,7 +81,6 @@ def test_btree_delete():
     tree.insert(2119)
     tree.insert(2114)
     tree.insert(2112)
-    log(tree)
     eq_(tree.delete(13), True)
     eq_(tree.delete(7), True)
     eq_(tree.delete(17), True)
