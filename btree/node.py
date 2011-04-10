@@ -169,7 +169,7 @@ class Node():
             child_pos = pos             # delete left child for key[pos]
         else:
             child_pos = pos + 1         # delete right child for key[pos]
-        return self.children.pop(pos)
+        return self.children.pop(child_pos)
 
     def set_pp_info(self, map):
         if not self.height in map:
