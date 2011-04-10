@@ -14,26 +14,19 @@ class Btree(object):
         return self.root.height
 
     def insert(self, key, value = None):
-        log("--------------------")
-        log("insert {0}".format(key))
         if self.root.is_full:
             old_root  = self.root
             self.root = Node(t = self.t, is_leaf = False, children = [old_root])
             self.root.split_child(0)
         self.root.insert(key, value)
-        log(self)
 
     def search(self, key):
         return self.root.search(key)
 
     def delete(self, key):
-        log("--------------------")
-        log("delete {0}".format(key))
         deleted = self.root.delete(key)
         if self.root.key_count == 0:
-            log("Updated root")
             self.root = self.root.children[0]
-        log(self)
         return deleted
 
     def __str__(self):
