@@ -85,9 +85,14 @@ class Node():
         else:
             if self.children[pos].is_full:
                 self.split_child(pos)
-            if pos < len(self.keys) and key == self.keys[pos]:
-                self.values[pos] == value # update value
+            key_pos = min(pos, len(self.keys) - 1)
+            hoisted = self.keys[key_pos]
+            if key == hoisted:
+                self.values[key_pos] == value # update value
             else:
+                if key > hoisted and pos < len(self.keys):
+                    # adjust pos (because self.keys was modified)
+                    pos += 1
                 self.children[pos].insert(key, value)
 
     def search(self, key):
