@@ -52,45 +52,45 @@ class Node():
         return self.t - 1
 
     def find_child_node_pos(self, key):
-        for i, known_key in enumerate(self.keys):
+        for pos, known_key in enumerate(self.keys):
             if key <= known_key:
                 break
         else:
-            i = len(self.keys)          # len(self.children) - 1
-        return i
+            pos = len(self.keys)          # len(self.children) - 1
+        return pos
 
     def insert(self, key, value = None):
         if (self.is_full):
             raise Exception("Do not call insert for full-node")
 
-        i = self.find_child_node_pos(key)
+        pos = self.find_child_node_pos(key)
 
-        if i < len(self.keys) and self.keys[i] == key:
-            self.values[i] = value      # update value
+        if pos < len(self.keys) and self.keys[pos] == key:
+            self.values[pos] = value      # update value
             return
 
         if self.is_leaf:
             # do insert
-            self.keys.insert(i, key)
-            self.values.insert(i, value)
+            self.keys.insert(pos, key)
+            self.values.insert(pos, value)
             self.children.append(None)
         else:
-            if self.children[i].is_full:
-                self.split_child(i)
-            if i < len(self.keys) and key == self.keys[i]:
-                self.values[i] == value # update value
+            if self.children[pos].is_full:
+                self.split_child(pos)
+            if pos < len(self.keys) and key == self.keys[pos]:
+                self.values[pos] == value # update value
             else:
-                self.children[i].insert(key, value)
+                self.children[pos].insert(key, value)
 
     def search(self, key):
-        i = self.find_child_node_pos(key)
+        pos = self.find_child_node_pos(key)
 
-        if i < len(self.keys) and key == self.keys[i]:
-            return (key, self.values[i])
+        if pos < len(self.keys) and key == self.keys[pos]:
+            return (key, self.values[pos])
         elif self.is_leaf:
             return None
         else:
-            return self.children[i].search(key)
+            return self.children[pos].search(key)
 
     def split_child(self, pos):
         child = self.children[pos]
@@ -126,11 +126,11 @@ class Node():
         assert(self.is_leaf)
 
         try:
-            i = self.keys.index(key)
+            pos = self.keys.index(key)
         except ValueError:
             return False                # not found
         else:
-            self.delete_at(i)
+            self.delete_at(pos)
             return True                 # found and deleted
 
     def delete_at(self, pos, left = False):
