@@ -30,6 +30,9 @@ class Btree(object):
         log("--------------------")
         log("delete {0}".format(key))
         deleted = self.root.delete(key)
+        if self.root.key_count == 0:
+            log("Updated root")
+            self.root = self.root.children[0]
         log(self)
         return deleted
 
